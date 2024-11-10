@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页输入与分类</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa; /* 修改背景颜色 */
+            margin: 0;
+            padding: 20px;
+            height: 100vh; /* 整个页面高度 */
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            font-size: 2.5em;
+            margin: 20px 0; /* 顶部底部间距 */
+        }
+        .modal {
+            display: none; /* 默认隐藏 */
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+            text-align: center; /* 居中内容 */
+            max-width: 400px; /* 最大宽度设置 */
+            margin: auto; /* 水平居中对齐 */
+            position: fixed; /* 固定位置 */
+            top: 50%; /* 垂直居中 */
+            left: 50%; /* 水平居中 */
+            transform: translate(-50%, -50%); /* 精确居中 */
+        }
+        .modal h2 {
+            color: #333;
+            margin-bottom: 20px; /* 模态标题底部间距 */
+        }
+        .modal input {
+            padding: 12px;
+            margin: 10px 0;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border 0.3s; /* 边框变换效果 */
+        }
+        .modal input:focus {
+            border-color: #007bff; /* 聚焦时的边框颜色 */
+        }
+        .modal button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 85%;
+            margin-top: 10px;
+            transition: background 0.3s; /* 按钮变换效果 */
+        }
+        .modal button:hover {
+            background-color: #0069d9; /* 悬停时深蓝色 */
+        }
+        .container {
+            display: flex; /* 使用flex布局 */
+            height: 95vh; /* 设置容器的高度为95%视口高度 */
+            background: white;
+            border-radius: 8px; /* 修改边角圆润程度 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* 增加阴影 */
+            display: none; /* 默认隐藏内容 */
+        }
+        .input-area {
+            flex: 1; /* 左侧输入区域占1份 */
+            padding: 30px; /* 增加内边距 */
+            border-right: 1px solid #e0e0e0; /* 右边界 */
+            overflow-y: auto; /* 允许垂直滚动 */
+        }
+        .output-area {
+            flex: 2; /* 右侧输出区域占2份 */
+            padding: 30px; /* 增加内边距 */
+            overflow-y: auto; /* 允许垂直滚动 */
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 1.2em;
+            color: #555; /* 标签字体颜色 */
+        }
+        input[type="text"], select {
+            width: calc(100% - 20px);
+            padding: 12px; /* 增加内边距 */
+            border: 1px solid #ccc; /* 边框颜色变深 */
+            border-radius: 5px;
+            margin-top: 5px;
+            font-size: 1em; /* 字体大小 */
+            transition: border 0.3s; /* 边框变换效果 */
+        }
+        input[type="text"]:focus {
+            border: 1px solid #5cb85c; /* 聚焦时的边框颜色 */
+            outline: none; /* 去掉外边框 */
+        }
+        button {
+            background-color: #007bff; /* 修改为蓝色 */
+            color: white;
+            border: none;
+            padding: 12px; /* 较大 padding */
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px; /* 添加按钮上方的间距 */
+            font-size: 1em; /* 字体大小 */
+            width: 100%; /* 使按钮宽度填满父元素 */
+            transition: background 0.3s; /* 按钮变换效果 */
+        }
+        button:hover {
+            background-color: #0069d9; /* 悬停时深蓝色 */
+        }
+        .module {
+            margin-top: 30px; /* 增加模块之间的间距 */
+            border: 1px solid #ccc;
+            border-radius: 8px; /* 修改模块边角圆润程度 */
+            padding: 20px; /* 增加模块内边距 */
+            background-color: #f9f9f9; /* 模块背景颜色 */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+        }
+        .module h2 {
+            color: #555;
+            font-size: 1.8em;
+            margin-bottom: 10px; /* 模块标题底部间距 */
+        }
+        ul {
+            padding-left: 0; /* 清空左侧填充 */
+            list-style-type: none; /* 去掉默认列表样式 */
+        }
+        ul li {
+            margin: 10px 0; /* 增加列表项之间的间距 */
+            display: flex; /* 使用flex布局来排列描述和按钮 */
+            justify-content: space-between; /* 使内容在两端对齐 */
+            align-items: center; /* 垂直居中对齐 */
+        }
+        .button-container {
+            display: flex; /* 使用flex布局 */
+            justify-content: flex-end; /* 按钮容器右对齐 */
+            align-items: center; /* 垂直居中对齐 */
+        }
+        .link-btn, .delete-btn {
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em; /* 缩小按钮字体大小 */
+            padding: 8px 12px; /* 增加按钮内边距 */
+            transition: background 0.3s; /* 悬停效果 */
+        }
+        .link-btn {
+            background-color: #28a745; /* 打开按钮的背景色 */
+            color: white;
+            margin-left: 10px; /*按钮间距 */
+        }
+        .link-btn:hover {
+            background-color: #218838; /* 打开按钮悬停效果 */
+        }
+        .delete-btn {
+            background-color: #dc3545; /* 删除按钮的背景色 */
+            color: white;
+        }
+        .delete-btn:hover {
+            background-color: #c82333; /* 删除按钮悬停效果 */
+        }
+    </style>
+    <script>
+        const correctPassword = "0202";
+
+        function showModal() {
+            document.querySelector('.modal').style.display = 'block'; // 显示密码输入框
+        }
+
+        function checkPassword() {
+            const password = document.getElementById("password").value;
+            if (password === correctPassword) {
+                document.querySelector('.modal').style.display = 'none'; // 隐藏密码输入框
+                document.querySelector('.container').style.display = 'flex'; // 显示内容
+            } else {
+                alert("密码错误，请重试！");
+            }
+        }
+
+        function getCurrentDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // 返回格式为 YYYY-MM-DD HH:MM:SS
+        }
+
+        function addLink() {
+            const url = document.getElementById("url").value;
+            let description = document.getElementById("description").value;
+            const category = document.getElementById("category").value;
+
+            if (!description) {
+                description = getCurrentDateTime(); // 如果描述为空，则自动填写当前日期和时间
+            }
+
+            if (url) {
+                const linkElement = document.createElement("li");
+                linkElement.innerHTML = `
+                    ${description} 
+                    <div class="button-container">
+                        <button class="link-btn" onclick="window.open('${url}', '_blank')">打开</button>
+                        <button class="delete-btn" onclick="deleteLink(this)">删除</button>
+                    </div>`;
+                
+                // 检查分类并添加到相应模块
+                document.getElementById(category + "List").appendChild(linkElement);
+
+                // 清空输入框
+                document.getElementById("url").value = '';
+                document.getElementById("description").value = '';
+            } else {
+                alert("请填写网页链接！");
+            }
+        }
+
+        function deleteLink(btn) {
+            const listItem = btn.parentElement.parentElement; // 获取按钮容器的父元素，即列表项
+            listItem.remove(); // 从DOM中删除列表项
+        }
+
+        window.onload = function() {
+            showModal(); // 页面加载后自动显示密码输入框
+            
+            // 允许回车键确认密码
+            document.getElementById("password").addEventListener("keypress", function(event) {
+                if (event.key === "Enter") {
+                    checkPassword();
+                }
+            });
+        };
+    </script>
+</head>
+<body>
+    <div class="modal">
+        <h2>请输入密码</h2>
+        <input type="password" id="password" placeholder="输入密码...">
+        <button onclick="checkPassword()">确认</button>
+    </div>
+    
+    <div class="container">
+        <div class="input-area">
+            <label for="url">输入内容:</label>
+            <input type="text" id="url" placeholder="http://...">
+
+            <label for="description">输入描述:</label>
+            <input type="text" id="description" placeholder="描述...">
+
+            <label for="category">分类:</label>
+            <select id="category">
+                <option value="code">代码</option>
+                <option value="course">课程</option>
+                <option value="extra">课余</option>
+                <option value="clipboard">粘贴板</option> <!-- 添加粘贴板分类 -->
+            </select>
+
+            <button onclick="addLink()">添加链接</button>
+        </div>
+        <div class="output-area">
+            <div class="module" id="codeModule">
+                <h2>代码模块</h2>
+                <ul id="codeList"></ul>
+            </div>
+
+            <div class="module" id="courseModule">
+                <h2>课程模块</h2>
+                <ul id="courseList"></ul>
+            </div>
+
+            <div class="module" id="extraModule">
+                <h2>课余模块</h2>
+                <ul id="extraList"></ul>
+            </div>
+
+            <div class="module" id="clipboardModule">
+                <h2>粘贴板模块</h2>
+                <ul id="clipboardList"></ul> <!-- 添加粘贴板列表 -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
